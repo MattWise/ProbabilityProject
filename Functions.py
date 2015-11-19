@@ -2,10 +2,11 @@ from __future__ import division,print_function
 import functools
 import numpy as np,itertools as it
 from collections import Counter
+import decorator
 """
 File for small, general purpose classes and functions used by other modules.
 """
-@functools.wraps
+
 def memodict(f):
     """
     Stolen from http://code.activestate.com/recipes/578231-probably-the-fastest-memoization-decorator-in-the-/
@@ -87,6 +88,7 @@ def xOfAKind(x,roll):
             return True
     return False
 
-
-
-
+def unHashDecorator(rule):
+    def hashCompatibleRule(hash):
+        return rule(unHashList(unHashDict(hash)))
+    return hashCompatibleRule

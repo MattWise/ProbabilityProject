@@ -20,5 +20,4 @@ def yahtzee(roll):
     return xOfAKind(5,roll)
 
 def chance(roll):
-    print(roll)
     return sum(roll)>0

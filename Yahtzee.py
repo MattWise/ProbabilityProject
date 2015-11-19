@@ -5,6 +5,7 @@ from AllRolls import *
 from Functions import *
 from Probability import *
 from AnalyzeRandomVariable import *
+from types import *
 
 def compileRules(modules=(RerollRules,ScoringRules,CategoryRules)):
 
@@ -13,6 +14,8 @@ def compileRules(modules=(RerollRules,ScoringRules,CategoryRules)):
 
     rr,sr,cr=tuple((getFuncs(module) for module in modules))
     Rules={rName:(rFunc,sFunc,cFunc) for rName,rFunc in rr for sName,sFunc in sr for cName,cFunc in cr if rName==sName==cName}
+    for key in Rules.keys():
+        Rules[key]=tuple((unHashDecorator(func) for func in Rules[key]))
     return Rules
 
 Rules=compileRules()

@@ -13,8 +13,6 @@ Functions that should:
 No other functions are allowed in this file. Put any helpers in Functions.py
 """
 
-#TODO: Unhashing decorator to make these work with hashed rolls.
-
 def chance(roll):
     if CategoryRules.chance(roll):
         return sum(roll)

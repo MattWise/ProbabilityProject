@@ -1,51 +1,57 @@
 from __future__ import division,print_function
 import numpy as np,itertools as it
 from collections import Counter
+"""
+File for small, general purpose classes and functions used by other modules.
+"""
 
-def memodict(f):#Stolen from http://code.activestate.com/recipes/578231-probably-the-fastest-memoization-decorator-in-the-/
-    """ Memoization decorator for a function taking a single argument """
+def memodict(f):
+    """
+    Stolen from http://code.activestate.com/recipes/578231-probably-the-fastest-memoization-decorator-in-the-/
+    Memoization decorator for a function taking a single argument
+    """
     class memodict(dict):
         def __missing__(self, key):
             ret = self[key] = f(key)
             return ret
     return memodict().__getitem__
 
-class defDict(dict):
+def memodict2(f):
+    """
+    Also stolen from http://code.activestate.com/recipes/578231-probably-the-fastest-memoization-decorator-in-the-/
+    Slower than memodict for one argument, but allows mutiple arguments.
+    """
+    class memodict(dict):
+        def __getitem__(self, *key):
+            return dict.__getitem__(self, key)
 
-    def __init__(self,default=0,seq=0,**kwargs):
-        super(defDict,self).__init__(seq,**kwargs)
+        def __missing__(self, key):
+            ret = self[key] = f(*key)
+            return ret
+
+    return memodict().__getitem__
+
+
+class defDict(dict):
+    #dictionary with a default value. When __getitem__ is called on a key not in the dictionary, the value is set to default value and returned.
+    def __init__(self,default=0,**kwargs):
+        super(defDict,self).__init__(**kwargs)
         self.default=default
 
-    def __getitem__(self, item):
-        if item in self:
-            return self[item]
-        else:
-            self[item]=self.default
-            return self.default
+    def __missing__(self,key):
+        self[key]=self.default
+        return self.default
 
+def squared(func):
+    def squaredFunc(x):
+        return func(x)**2
+    return squaredFunc
 """
-class AllRolls:
-
-    def __init__(self,sides=6,length=5):
-        self.sides=sides
-        self.length=length
-        self.AllPossibleRolls=self.getAllRolls()
-
-    def getAllRolls(self):
-        return list(it.product(range(1,self.sides+1),repeat=self.length))
-
-    def reroll(self,lst,values):
-        f
-
-    def isXeOfAKind(self,lst,x):
-        count=Counter(lst)
-        mode=count.most_common(1)
-        if lst.count(mode)>=x:
-            return True
-
-    def isSameRoll(lst1,lst2):
-
+Not actually a hash, of course. These functions merely convert an ordered list with repeats into a hashable, unordered set that retains information on repeats.
+The dictionary intermediates contain the same information, but are mutable, and thus nonhashable.
 """
+
+
 def hashList(lst):
     #returns frozenset of tuples of form (value, # of occurrences).
     dct=defDict(0)
@@ -55,7 +61,7 @@ def hashList(lst):
 
 def hashDict(dct):
     ret=[]
-    for key in dct.keys():
+    for key in sorted(dct.keys()):
         ret.append((key,dct[key]))
     return frozenset(ret)
 

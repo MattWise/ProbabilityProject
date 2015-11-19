@@ -2,6 +2,7 @@ from __future__ import division,print_function
 import random as r,numpy as np,itertools as it
 from Functions import *
 from types import *
+
 """
 P is a dictionary of frozenset, dictionary pairs.
     The former is the sample space or a subset of it.
@@ -16,6 +17,20 @@ The over all sample space with accompanying event probabilities must be explicit
 
 Random Variables are implemented as functions of signature: float func(frozenset event) and are expected to be memoized with Functions.memodict.
 """
+
+def memoizeGetSubset(getSubset):
+    #If the naming convention is not clear enough, this should not be used with anything except getSubset.
+    #Using an id of a mutable type as a key is unsafe in general, and only tremendous performance gains make it worth the risk here.
+    cache={}
+    def memoizedGetSubset(self,inEvent):
+        key=id(inEvent)
+        if key in cache:
+            return cache[key]
+        else:
+            ret=getSubset(self, inEvent)
+            cache[key]=ret
+            return ret
+    return memoizedGetSubset
 
 class P(dict):
 
@@ -40,7 +55,7 @@ class P(dict):
         if not frozenset(key).issubset(frozenset(self.SampleSpace)):
             raise ValueError("Key not subset of sample space")
         else:
-            self.__addSubset(key)
+            return self.__addSubset(key)
 
     def __addSubset(self, subset):
         #For internal use. No verification.
@@ -50,34 +65,20 @@ class P(dict):
         for event in subset:
             probabilities[event]= self[self.SampleSpace][event] / weight
         self[subset]=probabilities
+        return self[subset]
 
     @memoizeGetSubset
     def getSubset(self,inEvent):
         #inEvent is a function of signature bool inEvent(frozenset simpleEvent) which, given a simple event, returns whether that event is a member of the compound event.
         #Returns the subset of the sample space for which inEvent is true, representing a compound event.
         #Cheated to memioze this. Treat inEvent as an immutable, or else.
+        #Must be a class function becuases memoization is only valid for the same sample space.
         return frozenset(it.ifilter(inEvent,self.SimpleEvents))
 
     def probabilityOfCompoundEvent(self,subset):
         #inEvent is a function of signature bool inEvent(frozenset simpleEvent) which, given a simple event, returns whether that event is a member of the compound event.
         #Returns probability of the compound event represented by the set of simple events "subset".
         #Memiozed, of course.
-        self.__addSubset(subset)
+        self[subset] #Ensures subset in P
+        assert subset in self
         return self.Weights[subset]
-
-    def probabilityConditionalEvent(self,subset):
-        #returns the normalized probability dictionary self[subset].
-        return self[subset]
-
-def memoizeGetSubset(func):
-    #If the naming convention is not clear enough, this should not be used with anything except getSubset.
-    #Using an id of a mutable type as a key is unsafe in general, and only tremendous performance gains make it worth the risk here.
-    memory={}
-    def memoizedGetSubset(self,func):
-        key=id(func)
-        if key in memory:
-            return memory[key]
-        else:
-            return memoizedGetSubset(self,func)
-    return memoizedGetSubset
-

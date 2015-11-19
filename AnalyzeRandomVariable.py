@@ -15,14 +15,16 @@ class AnalyzeRandomVariable:
         self.randomVariable=randomVariable
         self.randomVariableSquared=squared(randomVariable)
         self.probabilities=probabilities
+        self.values=self.getValues(self.randomVariable)
         self.expectedValue=self.getExpectedValue(self.values)
         self.variance=self.getVariance()
         self.sigma=math.sqrt(self.variance)
 
     def getValues(self,f):
-        self.values=[]
+        values=[]
         for key in self.probabilities.keys():
-            self.values.append(self.probabilities[key]*f(key))
+            values.append(self.probabilities[key]*f(key))
+        return values
 
     def getExpectedValue(self,values):
         return sum(values)/len(values)
@@ -30,3 +32,7 @@ class AnalyzeRandomVariable:
     def getVariance(self):
         expSquared=self.getExpectedValue(self.getValues(self.randomVariableSquared))
         return expSquared-(self.expectedValue)**2
+
+    def prnt(self):
+        print("\n{}:\n\nExpected Value: {}\nVariance: {}".format(self.randomVariable.__name__,self.expectedValue,self.variance))
+

@@ -1,10 +1,11 @@
 from __future__ import division,print_function
+import functools
 import numpy as np,itertools as it
 from collections import Counter
 """
 File for small, general purpose classes and functions used by other modules.
 """
-
+@functools.wraps
 def memodict(f):
     """
     Stolen from http://code.activestate.com/recipes/578231-probably-the-fastest-memoization-decorator-in-the-/
@@ -78,6 +79,13 @@ def unHashList(dct):
         for occurrence in range(dct[value]):
             lst.append(value)
     return lst
+
+def xOfAKind(x,roll):
+    rolldict=unHashDict(hashList(roll))
+    for key in rolldict.keys():
+        if rolldict[key]>=x:
+            return True
+    return False
 
 
 

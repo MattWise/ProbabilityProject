@@ -8,12 +8,12 @@ from types import *
 Functions related to rolling dice
 """
 
-def allRolls(sides=6,length=5):
+def allRolls(sides=6, dice=5):
     def genInEvent(event):
         return lambda lst: hashList(lst) == event
 
-    keys=tuple((tuple(i) for i in it.product(range(1,sides+1),repeat=length)))
-    prob=1/(length**sides)
+    keys=tuple((tuple(i) for i in it.product(range(1,sides+1), repeat=dice)))
+    prob=1/(dice ** sides)
     rollProbs={key:prob for key in keys}
     pRolls=P((keys,rollProbs))
     events=frozenset(hashList(roll) for roll in keys)
@@ -49,6 +49,14 @@ def reroll(rollHash,rerollRule,p):
     inEvent=getRerollInEvent(rollHash,values)
     return p.getSubset(inEvent)
 
-if __name__=="__main__":
-    R=allRolls(sides=6,length=5)
-    print(len(R.keys()[0]))
+def calculateOutcomes(rerollRule,p,rerolls=2):
+    #Takes the rerollRule and the number of rerolls desired
+    #Returns a dictionary {finalRollValue:probability(finalRollValue) for finalRollValue in allPossibleRolls}
+    probDicts=[p[p.SampleSpace]]#contains at index i the probability dictionary for roll values after i rerolls
+    for r in range(rerolls):
+        probDict=defDict()
+        for k in p.SimpleEvents:
+            for i in p.SimpleEvents:
+                probDict[k]+=p[reroll(i,rerollRule,p)][k] #With memoization, this isn't as bad as it appears.
+        probDicts.append(probDict)
+    return probDicts[-1]

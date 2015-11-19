@@ -1,5 +1,4 @@
 from __future__ import division,print_function
-import random as r,numpy as np,itertools as it
 from Functions import *
 from types import *
 

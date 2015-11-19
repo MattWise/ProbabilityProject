@@ -5,10 +5,12 @@ from Functions import *
 Functions that should:
     be of signature list rerollRule(list roll).
     take a list of five values representing a dice roll and return the values (not the indexes) to be rerolled.
-    be named for the category they are optimized for.
+    be named for the category they are optimized for. Names should be precisely what's on the score card in camelCase.
+
+No other functions are allowed in this file. Put any helpers in Functions.py
 """
 
-def Yahtzee(roll):
+def yahtzee(roll):
     #Yatzhee reroll rule. Keeps the ones you have most of and rerolls the rest.
     values=[]
     rollHash=hashList(roll)
@@ -23,3 +25,6 @@ def Yahtzee(roll):
     del rolldict[mode]
     values=unHashList(rolldict)
     return values
+
+def chance(roll):
+    return [value for value in roll if value<4]

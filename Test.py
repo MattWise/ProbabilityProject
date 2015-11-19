@@ -17,19 +17,6 @@ probability of getting a specific event in 1 reroll is sum(prob(getting event fr
 sum([prob(getting event from i)*prob(i) for i in ps[]])
 """
 
-def calculateOutcomes(rerollRule,rerolls=2):
-    #Takes the rerollRule and the number of rerolls desired
-    #Returns a dictionary {finalRollValue:probability(finalRollValue) for finalRollValue in allPossibleRolls}
-    p=allRolls()
-    probDicts=[p[p.SampleSpace]]#contains at index i the probability dictionary for roll values after i rerolls
-    for r in range(rerolls):
-        probDict=defDict()
-        for k in p.SimpleEvents:
-            for i in p.SimpleEvents:
-                probDict[k]+=p[reroll(i,rerollRule,p)][k] #With memoization, this isn't as bad as it appears.
-        probDicts.append(probDict)
-    return probDicts[-1]
-
 sides=[1,2,3,4,5,6]
 a=it.product(sides,repeat=3)
 for i in a:
@@ -59,3 +46,16 @@ class AllRolls:
             prob=pRolls.probabilityOfCompoundEvent(pRolls.getSubset(inEvent))
             eventProbs[event]=prob
         return P((events,eventProbs))
+
+    def calculateOutcomes(rerollRule,rerolls=2):
+    #Takes the rerollRule and the number of rerolls desired
+    #Returns a dictionary {finalRollValue:probability(finalRollValue) for finalRollValue in allPossibleRolls}
+    p=allRolls()
+    probDicts=[p[p.SampleSpace]]#contains at index i the probability dictionary for roll values after i rerolls
+    for r in range(rerolls):
+        probDict=defDict()
+        for k in p.SimpleEvents:
+            for i in p.SimpleEvents:
+                probDict[k]+=p[reroll(i,rerollRule,p)][k] #With memoization, this isn't as bad as it appears.
+        probDicts.append(probDict)
+    return probDicts[-1]

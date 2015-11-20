@@ -1,3 +1,5 @@
 .idea/workspace.xml
 .idea/ProbabilityProject.iml
 .idea/misc.xml
+*.pyc
+.idea/*

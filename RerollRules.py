@@ -31,6 +31,8 @@ def chance(roll):
 
 def smallStraight(roll):
 
+    #ToDo Make this work
+
     def helper(a,b,c):
         #if a, b and c in roll, discards c
         if a in keeplst and b in keeplst and c in keeplst:
@@ -44,6 +46,8 @@ def smallStraight(roll):
     def invertList(sample,lst):
         invertedlst=[]
         for value in lst:
+            pass
+        return None
 
 
     keeplst=roll[:]

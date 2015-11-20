@@ -92,3 +92,24 @@ def unHashDecorator(rule):
     def hashCompatibleRule(hash):
         return rule(unHashList(unHashDict(hash)))
     return hashCompatibleRule
+
+#Debugging Functions
+
+def verifyNormalization(p,subset):
+    a=sum(p[subset][key] for key in p[subset].keys())
+    assert equalToTollerance(a,1.),"total p = {}".format(a)
+
+def equalToTollerance(a,b):
+    return abs(a-b)<10^-5
+
+def testHash(lst):
+    hsh=hashList(lst)
+    listsToHash=[]
+    for i in np.arange(100):
+        a=r.randint(0,len(lst)-1)
+        b=r.randint(0,len(lst)-1)
+        lst[a],lst[b]=lst[b],lst[a]
+        listsToHash.append(lst[:])
+    hshs=[hashList(L) for L in listsToHash]
+    for h in hshs:
+        assert h==hsh,"{}!={}".format(h,hshs)

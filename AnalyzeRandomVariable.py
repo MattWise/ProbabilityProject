@@ -1,7 +1,7 @@
 from __future__ import division,print_function
 
 from Functions import *
-import math
+import cmath as m
 
 
 class AnalyzeRandomVariable:
@@ -20,7 +20,7 @@ class AnalyzeRandomVariable:
         self.values=self.getValues(self.randomVariable)
         self.expectedValue=self.getExpectedValue(self.values)
         self.variance=self.getVariance()
-        self.sigma=math.sqrt(self.variance)
+        self.sigma=m.sqrt(self.variance)
         self.verify()
 
     def verify(self):

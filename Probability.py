@@ -18,11 +18,27 @@ Random Variables are implemented as functions of signature: float func(frozenset
 """
 
 def memoizeGetSubset(getSubset):
-    #If the naming convention is not clear enough, this should not be used with anything except getSubset.
-    #Using an id of a mutable type as a key is unsafe in general, and only tremendous performance gains make it worth the risk here.
+    """
+    getSubset is O(len(sampleSpace)), which is potentially very large.
+    Further, the only easy way to cut down on calls to getSubset is memoization.
+    inEvent functions are generally going to be generated dynamically from data P can't access, so the only place to memoize is here.
+    Therefore, the performance gains from memoizing getSubset are potentially huge in an already unweildy algoritm.
+
+    I had to cheat to get this to work. A lot.
+    Functions are not hashable types, but integer IDs are.
+    However, python reuses IDs when the associated object is garbage collected.
+    My options are to either put the onus of generating unique IDs on the library user, or prevent garbage collection of the inEvent functions.
+    I chose the latter.
+
+    Warning:
+        Do not use with any other function.
+        This function is a memory leak: inEvent functions are never garbage collected.
+    """
     cache={}
+    doNotGarbageCollect=[]
     def memoizedGetSubset(self,inEvent):
         key=id(inEvent)
+        doNotGarbageCollect.append(inEvent)
         if key in cache:
             return cache[key]
         else:
@@ -34,14 +50,14 @@ def memoizeGetSubset(getSubset):
 class P(dict):
 
     def __init__(self, inpt, **kwargs):
-        #inpt must be a list or tuple of form: (frozenset sampleSpace,dict probabilities)
+        #inpt must be a list or tuple of form: (frozenset sampleSpace,dict(0) probabilities)
         assert len(inpt)==2
-        assert type(inpt[1]) is DictType
+        assert isinstance(inpt[1],DictType)
         super(P,self).__init__(**kwargs)
         self[inpt[0]]=inpt[1]
-        self.SimpleEvents=inpt[1].keys()
         self.SampleSpace=inpt[0]
         self.Weights={self.SampleSpace:1.}
+        #verifyNormalization(self,self.SampleSpace)
 
     def verifySampleSpace(self):
         #Debugging function.
@@ -62,10 +78,11 @@ class P(dict):
         #For internal use. No verification.
         weight=sum((self[self.SampleSpace][event] for event in subset))
         self.Weights[subset]=weight
-        probabilities={}
-        for event in subset:
-            probabilities[event]= self[self.SampleSpace][event] / weight
+        probabilities=defDict()
+        for simpleEvent in subset:
+            probabilities[simpleEvent]=self[self.SampleSpace][simpleEvent]/weight
         self[subset]=probabilities
+        #verifyNormalization(self,subset)
         return self[subset]
 
     @memoizeGetSubset
@@ -74,7 +91,7 @@ class P(dict):
         #Returns the subset of the sample space for which inEvent is true, representing a compound event.
         #Cheated to memioze this. Treat inEvent as an immutable, or else.
         #Must be a class function becuases memoization is only valid for the same sample space.
-        return frozenset(it.ifilter(inEvent,self.SimpleEvents))
+        return frozenset(event for event in self.SampleSpace if inEvent(event))
 
     def probabilityOfCompoundEvent(self,subset):
         #inEvent is a function of signature bool inEvent(frozenset simpleEvent) which, given a simple event, returns whether that event is a member of the compound event.

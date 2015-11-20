@@ -28,12 +28,12 @@ class Yahtzee:
         self.p=allRolls(sides,dice)
 
 
-def problem4(n):
+def problem3(n):
     #expected value and variance of chance score in n rerolls.
     y=Yahtzee()
     outcomes=calculateOutcomes(Rules["chance"][0],y.p,n)
     a=AnalyzeRandomVariable(Rules["chance"][1],outcomes)
-    print("\nProblem 4: {} rerolls".format(n))
+    print("\nProblem 3: {} rerolls".format(n))
     a.prnt()
 
-problem4(0)
+problem3(0)

@@ -51,10 +51,12 @@ class P(dict):
 
     def __missing__(self,key):
         #Recall, key should be a hashable collection of hashable collections representing simple events.
-        if not frozenset(key).issubset(frozenset(self.SampleSpace)):
+        if not frozenset((frozenset(item) for item in key)).issubset(frozenset(frozenset(item) for item in self.SampleSpace)):
+            print(frozenset(key))
             raise ValueError("Key not subset of sample space")
         else:
             return self.__addSubset(key)
+
 
     def __addSubset(self, subset):
         #For internal use. No verification.

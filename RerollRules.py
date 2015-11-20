@@ -3,7 +3,7 @@ from Functions import *
 
 """
 Functions that should:
-    be of signature list rerollRule(list roll).
+    be of signature tuple rerollRule(list roll).
     take a list of five values representing a dice roll and return the values (not the indexes) to be rerolled.
     be named for the category they are optimized for. Names should be precisely what's on the score card in camelCase.
 
@@ -24,7 +24,7 @@ def yahtzee(roll):
             mode=key
     del rolldict[mode]
     values=unHashList(rolldict)
-    return values
+    return tuple(values)
 
 def chance(roll):
-    return [value for value in roll if value<4]
+    return tuple((value for value in roll if value<4))

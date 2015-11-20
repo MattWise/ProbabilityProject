@@ -1,7 +1,7 @@
 from __future__ import division,print_function
 import functools
 import numpy as np,itertools as it
-from collections import Counter
+import collections
 import decorator
 """
 File for small, general purpose classes and functions used by other modules.

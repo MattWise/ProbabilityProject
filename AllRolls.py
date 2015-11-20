@@ -45,7 +45,7 @@ def getRerollInEvent(rollHash,values):
 
 def reroll(rollHash,rerollRule,p):
     #Takes rollHash, rerollRule, and P for sample space and returns the subset of the sample space that fits the reroll rule.
-    values=rerollRule(unHashList(unHashDict(rollHash)))
+    values=rerollRule(rollHash)
     inEvent=getRerollInEvent(rollHash,values)
     return p.getSubset(inEvent)
 

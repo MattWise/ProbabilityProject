@@ -14,6 +14,7 @@ No other functions are allowed in this file. Put any helpers in Functions.py
 """
 
 def chance(roll):
+    assert(4<sum(roll)<=30)
     if CategoryRules.chance(roll):
         return sum(roll)
     else:

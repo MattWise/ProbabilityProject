@@ -1,3 +1,5 @@
+from __future__ import division,print_function
+
 from Functions import *
 import math
 
@@ -19,6 +21,12 @@ class AnalyzeRandomVariable:
         self.expectedValue=self.getExpectedValue(self.values)
         self.variance=self.getVariance()
         self.sigma=math.sqrt(self.variance)
+        self.verify()
+
+    def verify(self):
+        #debugging function
+        assert sum((self.probabilities[key] for key in self.probabilities.keys()))
+        print(sum(self.values))
 
     def getValues(self,f):
         values=[]
@@ -27,7 +35,7 @@ class AnalyzeRandomVariable:
         return values
 
     def getExpectedValue(self,values):
-        return sum(values)/len(values)
+        return sum(values)
 
     def getVariance(self):
         expSquared=self.getExpectedValue(self.getValues(self.randomVariableSquared))

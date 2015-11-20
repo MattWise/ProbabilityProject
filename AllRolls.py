@@ -13,7 +13,10 @@ def allRolls(sides=6, dice=5):
         return lambda lst: hashList(lst) == event
 
     keys=tuple((tuple(i) for i in it.product(range(1,sides+1), repeat=dice)))
-    prob=1/(dice ** sides)
+    print (len(keys)-dice**(sides))
+    assert len(keys)==dice**(1+sides)
+    prob=1/(dice ** sides+1)
+
     rollProbs={key:prob for key in keys}
     pRolls=P((keys,rollProbs))
     events=frozenset(hashList(roll) for roll in keys)

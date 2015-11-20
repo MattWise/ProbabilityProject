@@ -28,3 +28,35 @@ def yahtzee(roll):
 
 def chance(roll):
     return tuple((value for value in roll if value<4))
+
+def smallStraight(roll):
+
+    def helper(a,b,c):
+        #if a, b and c in roll, discards c
+        if a in keeplst and b in keeplst and c in keeplst:
+            keeplst.remove(c)
+
+    def helper2(a,b):
+        #if a and b in roll, discards b
+        if a not in keeplst and b in keeplst:
+            keeplst.remove(b)
+
+    def invertList(sample,lst):
+        invertedlst=[]
+        for value in lst:
+
+
+    keeplst=roll[:]
+    helper(1,2,5)
+    helper2(2,1)
+    helper(6,5,2)
+    helper2(5,6)
+    helper(2,5,1)
+    helper(2,5,6)
+
+    list(set(keeplst))
+    rerollList=[]
+
+
+
+    return tuple(rerollList)

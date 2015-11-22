@@ -48,15 +48,15 @@ def reroll(rollHash,rerollRule,p):
     inEvent=getRerollInEvent(rollHash,values)
     return p.getSubset(inEvent)
 
-def calculateOutcomes(rerollRule,p,rerolls=2):
+def calculateOutcomes(rerollRule,p,rerolls=2): #TODO: This is wrong. Fix it.
     #Takes the rerollRule and the number of rerolls desired
     #Returns a dictionary {finalRollValue:probability(finalRollValue) for finalRollValue in allPossibleRolls}
     probDicts=[p[p.SampleSpace]]#contains at index i the probability dictionary for roll values after i rerolls
     for r in range(rerolls):
         probDict=defDict()
-        for i in p.SampleSpace:
+        for i in probDicts[r].keys():
             r=reroll(i,rerollRule,p)
             for k in r:
-                probDict[k]+=p[r][k] #With memoization, this isn't as bad as it appears.
+                probDict[k]+=p[r][k]
         probDicts.append(probDict)
     return probDicts[-1]

@@ -15,13 +15,13 @@ def allRolls(sides=6, dice=5):
     prob=1/(sides**dice)
 
     rollProbs={key:prob for key in keys}
-    pRolls=P((frozenset(keys),rollProbs))
+    pRolls= P(rollProbs)
     events=frozenset((hashList(roll) for roll in keys))
     eventProbs={}
     for event in events:
         prob=pRolls.probabilityOfCompoundEvent(pRolls.getSubset(lambda lst:hashList(lst)==event))
         eventProbs[event]=prob
-    return P((events,eventProbs))
+    return P(eventProbs)
 
 @memodict2 #Memoization here ensures identically same function returned, which allows memoization of P.getSubset. This is why rollHash and values are used rather than roll and rerollRule.
 def getRerollInEvent(rollHash,values):
@@ -48,15 +48,29 @@ def reroll(rollHash,rerollRule,p):
     inEvent=getRerollInEvent(rollHash,values)
     return p.getSubset(inEvent)
 
+def rerollTest():
+    p=allRolls(3,2)
+    roll=[1,3]
+    rh=hashList(roll)
+    rerollRule=lambda x:tuple((value for value in x if value<2))
+    rerollRule=unHashDecorator(rerollRule)
+    print(reroll(rh,rerollRule,p))
+
 def calculateOutcomes(rerollRule,p,rerolls=2): #TODO: This is wrong. Fix it.
     #Takes the rerollRule and the number of rerolls desired
     #Returns a dictionary {finalRollValue:probability(finalRollValue) for finalRollValue in allPossibleRolls}
-    probDicts=[p[p.SampleSpace]]#contains at index i the probability dictionary for roll values after i rerolls
+    s=p.SampleSpace
+    #verifyNormalizationP(p,s)
+    ps=[p]#contains at index i the P object for roll values after i rerolls
     for r in range(rerolls):
-        probDict=defDict()
-        for i in probDicts[r].keys():
-            r=reroll(i,rerollRule,p)
-            for k in r:
-                probDict[k]+=p[r][k]
-        probDicts.append(probDict)
-    return probDicts[-1]
+        p0=ps[-1]
+        #Prob(i)=sum((prob(k)*prob(i|k) for k in s)
+        ps.append(P({i: sum((p0[s][k] * p0[reroll(i, rerollRule, p0)][i] for k in s)) for i in s}))
+        verifyNormalizationP(ps[r+1],s)
+    return ps[-1][s]
+
+def calculateOutcomesTest():
+    p=allRolls(3,2)
+    rerollRule=lambda x:tuple((value for value in x if value<2))
+    rerollRule=unHashDecorator(rerollRule)
+    calculateOutcomes(rerollRule,p)

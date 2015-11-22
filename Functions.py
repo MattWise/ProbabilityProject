@@ -91,15 +91,20 @@ def xOfAKind(x,roll):
 def unHashDecorator(rule):
     def hashCompatibleRule(hash):
         return rule(unHashList(unHashDict(hash)))
+    hashCompatibleRule.__name__=rule.__name__
     return hashCompatibleRule
 
 #Debugging Functions
 
-def verifyNormalization(p,subset):
-    a=sum(p[subset][key] for key in p[subset].keys())
-    assert equalToTollerance(a,1.),"total p = {}".format(a)
+def verifyNormalizationP(p, subset):
+    probDict=p[subset]
+    return verifyNormalizationProbDict(probDict)
 
-def equalToTollerance(a,b):
+def verifyNormalizationProbDict(probdict):
+    a=sum(probdict[key] for key in probdict.keys())
+    assert equalWithinTollerance(a, 1.), "total p = {}".format(a)
+
+def equalWithinTollerance(a, b):
     return abs(a-b)<10^-5
 
 def testHash(lst):

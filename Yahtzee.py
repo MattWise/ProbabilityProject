@@ -32,8 +32,9 @@ def problem3(n):
     #expected value and variance of chance score in n rerolls.
     y=Yahtzee()
     outcomes=calculateOutcomes(Rules["chance"][0],y.p,n)
+    verifyNormalizationProbDict(outcomes)
     a=AnalyzeRandomVariable(Rules["chance"][1],outcomes)
     print("\nProblem 3: {} rerolls".format(n))
     a.prnt()
 
-problem3(0)
+problem3(2)

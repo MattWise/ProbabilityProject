@@ -49,13 +49,12 @@ def memoizeGetSubset(getSubset):
 
 class P(dict):
 
-    def __init__(self, inpt, **kwargs):
+    def __init__(self, probDict, **kwargs):
         #inpt must be a list or tuple of form: (frozenset sampleSpace,dict(0) probabilities)
-        assert len(inpt)==2
-        assert isinstance(inpt[1],DictType)
+        assert isinstance(probDict,DictType)
         super(P,self).__init__(**kwargs)
-        self[inpt[0]]=inpt[1]
-        self.SampleSpace=inpt[0]
+        self.SampleSpace=frozenset(probDict.keys())
+        self[self.SampleSpace]=probDict
         self.Weights={self.SampleSpace:1.}
         #verifyNormalization(self,self.SampleSpace)
 
@@ -94,9 +93,8 @@ class P(dict):
         return frozenset(event for event in self.SampleSpace if inEvent(event))
 
     def probabilityOfCompoundEvent(self,subset):
-        #inEvent is a function of signature bool inEvent(frozenset simpleEvent) which, given a simple event, returns whether that event is a member of the compound event.
         #Returns probability of the compound event represented by the set of simple events "subset".
-        #Memiozed, of course.
+        #Memiozed, of course, via the dictionary behavior of P.
         self[subset] #Ensures subset in P
         assert subset in self
         return self.Weights[subset]

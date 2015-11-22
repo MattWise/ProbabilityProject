@@ -9,7 +9,7 @@ class AnalyzeRandomVariable:
     Takes:
         Function randomVariable: returns a number when operated on a simple event
         Dictionary probabilities: gives the probability for each simple event of form:
-            probabilities[simpleEvent]=p(simpleEvent)
+            probabilities[simpleEvent]=probability(simpleEvent)
 
     Calculates the expected value, variance, and sigma for the random variable
     """
@@ -21,12 +21,10 @@ class AnalyzeRandomVariable:
         self.expectedValue=self.getExpectedValue(self.values)
         self.variance=self.getVariance()
         self.sigma=m.sqrt(self.variance)
-        self.verify()
 
     def verify(self):
         #debugging function
-        assert sum((self.probabilities[key] for key in self.probabilities.keys()))
-        print(sum(self.values))
+        assert equalWithinTollerance(sum((self.probabilities[key] for key in self.probabilities.keys())), 1),sum(self.values)
 
     def getValues(self,f):
         values=[]

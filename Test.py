@@ -23,4 +23,4 @@ print(len(keys))
 print(sides**dice)
 """
 
-
+calculateOutcomesTest()

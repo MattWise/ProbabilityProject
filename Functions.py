@@ -7,6 +7,10 @@ import decorator
 File for small, general purpose classes and functions used by other modules.
 """
 
+"""
+Decorators
+"""
+
 def memodict(f):
     """
     Stolen from http://code.activestate.com/recipes/578231-probably-the-fastest-memoization-decorator-in-the-/
@@ -33,6 +37,47 @@ def memodict2(f):
 
     return memodict().__getitem__
 
+def memoizeGetSubset(getSubset):
+    """
+    getSubset is O(len(sampleSpace)), which is potentially very large.
+    Further, the only easy way to cut down on calls to getSubset is memoization.
+    inEvent functions are generally going to be generated dynamically from data P can't access, so the only place to memoize is here.
+    Therefore, the performance gains from memoizing getSubset are potentially huge in an already unweildy algoritm.
+
+    I had to cheat to get this to work. A lot.
+    Functions are not hashable types, but integer IDs are.
+    However, python reuses IDs when the associated object is garbage collected.
+    My options are to either put the onus of generating unique IDs on the library user, or prevent garbage collection of the inEvent functions.
+    I chose the latter.
+
+    Warning:
+        Do not use with any other function.
+        This function is a memory leak: inEvent functions are never garbage collected.
+    """
+    cache={}
+    doNotGarbageCollect=[]
+    def memoizedGetSubset(set,inEvent):
+        key=(set,id(inEvent))
+        doNotGarbageCollect.append(inEvent)
+        if key in cache:
+            return cache[key]
+        else:
+            ret=getSubset(set, inEvent)
+            cache[key]=ret
+            return ret
+    return memoizedGetSubset
+
+def squared(func):
+    def squaredFunc(x):
+        return func(x)**2
+    return squaredFunc
+
+def unHashDecorator(rule):
+    #For application to the functions in CategoryRules, RerollRules, and Scoring Rules. Allows them to keep the roll-as-list input while allowing them to be called using hashes.
+    def hashCompatibleRule(hash):
+        return rule(unHashList(unHashDict(hash)))
+    hashCompatibleRule.__name__=rule.__name__
+    return hashCompatibleRule
 
 class defDict(dict):
     #dictionary with a default value. When __getitem__ is called on a key not in the dictionary, the value is set to default value and returned.
@@ -44,15 +89,24 @@ class defDict(dict):
         self[key]=self.default
         return self.default
 
-def squared(func):
-    def squaredFunc(x):
-        return func(x)**2
-    return squaredFunc
 """
+Functions relating to manipulating sets.
+"""
+
+@memoizeGetSubset
+def getSubset(Set,inEvent):
+    #inEvent is a function of signature bool inEvent(frozenset simpleEvent) which, given a simple event, returns whether that event is a member of the compound event.
+    #Returns the subset of the sample space for which inEvent is true, representing a compound event.
+    #Cheated to memioze this. Treat inEvent as an immutable, or else.
+    #Must be a class function becuases memoization is only valid for the same sample space.
+    return frozenset(event for event in Set if inEvent(event))
+
+"""
+Functions relating to roll hashing and unhashing.
+
 Not actually a hash, of course. These functions merely convert an ordered list with repeats into a hashable, unordered set that retains information on repeats.
 The dictionary intermediates contain the same information, but are mutable, and thus nonhashable.
 """
-
 
 def hashList(lst):
     #returns frozenset of tuples of form (value, # of occurrences).
@@ -81,6 +135,10 @@ def unHashList(dct):
             lst.append(value)
     return lst
 
+"""
+Helper functions for the rules, since the only functions allowed in those files are the rules themselves.
+"""
+
 def xOfAKind(x,roll):
     rolldict=unHashDict(hashList(roll))
     for key in rolldict.keys():
@@ -88,13 +146,9 @@ def xOfAKind(x,roll):
             return True
     return False
 
-def unHashDecorator(rule):
-    def hashCompatibleRule(hash):
-        return rule(unHashList(unHashDict(hash)))
-    hashCompatibleRule.__name__=rule.__name__
-    return hashCompatibleRule
-
-#Debugging Functions
+"""
+Debugging Functions
+"""
 
 def verifyNormalizationP(p, subset):
     probDict=p[subset]
@@ -105,7 +159,8 @@ def verifyNormalizationProbDict(probdict):
     assert equalWithinTollerance(a, 1.), "total p = {}".format(a)
 
 def equalWithinTollerance(a, b):
-    return abs(a-b)<10^-5
+    #For checking floating point numbers
+    return abs(a-b)<(10**-5)
 
 def testHash(lst):
     hsh=hashList(lst)

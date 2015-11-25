@@ -17,36 +17,6 @@ The over all sample space with accompanying event probabilities must be explicit
 Random Variables are implemented as functions of signature: float func(frozenset event) and are expected to be memoized with Functions.memodict.
 """
 
-def memoizeGetSubset(getSubset):
-    """
-    getSubset is O(len(sampleSpace)), which is potentially very large.
-    Further, the only easy way to cut down on calls to getSubset is memoization.
-    inEvent functions are generally going to be generated dynamically from data P can't access, so the only place to memoize is here.
-    Therefore, the performance gains from memoizing getSubset are potentially huge in an already unweildy algoritm.
-
-    I had to cheat to get this to work. A lot.
-    Functions are not hashable types, but integer IDs are.
-    However, python reuses IDs when the associated object is garbage collected.
-    My options are to either put the onus of generating unique IDs on the library user, or prevent garbage collection of the inEvent functions.
-    I chose the latter.
-
-    Warning:
-        Do not use with any other function.
-        This function is a memory leak: inEvent functions are never garbage collected.
-    """
-    cache={}
-    doNotGarbageCollect=[]
-    def memoizedGetSubset(self,inEvent):
-        key=id(inEvent)
-        doNotGarbageCollect.append(inEvent)
-        if key in cache:
-            return cache[key]
-        else:
-            ret=getSubset(self, inEvent)
-            cache[key]=ret
-            return ret
-    return memoizedGetSubset
-
 class P(dict):
 
     def __init__(self, probDict, **kwargs):
@@ -71,7 +41,6 @@ class P(dict):
         else:
             return self.__addSubset(key)
 
-
     def __addSubset(self, subset):
         #For internal use. No verification.
         weight=sum((self[self.SampleSpace][event] for event in subset))
@@ -82,14 +51,6 @@ class P(dict):
         self[subset]=probabilities
         #verifyNormalization(self,subset)
         return self[subset]
-
-    @memoizeGetSubset
-    def getSubset(self,inEvent):
-        #inEvent is a function of signature bool inEvent(frozenset simpleEvent) which, given a simple event, returns whether that event is a member of the compound event.
-        #Returns the subset of the sample space for which inEvent is true, representing a compound event.
-        #Cheated to memioze this. Treat inEvent as an immutable, or else.
-        #Must be a class function becuases memoization is only valid for the same sample space.
-        return frozenset(event for event in self.SampleSpace if inEvent(event))
 
     def probabilityOfCompoundEvent(self,subset):
         #Returns probability of the compound event represented by the set of simple events "subset".

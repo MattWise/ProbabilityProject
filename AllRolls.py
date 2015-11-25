@@ -19,7 +19,7 @@ def allRolls(sides=6, dice=5):
     events=frozenset((hashList(roll) for roll in keys))
     eventProbs={}
     for event in events:
-        prob=pRolls.probabilityOfCompoundEvent(pRolls.getSubset(lambda lst:hashList(lst)==event))
+        prob=pRolls.probabilityOfCompoundEvent(getSubset(pRolls.SampleSpace,lambda lst:hashList(lst)==event))
         eventProbs[event]=prob
     return P(eventProbs)
 
@@ -42,11 +42,11 @@ def getRerollInEvent(rollHash,values):
         return True
     return inEvent
 
-def reroll(rollHash,rerollRule,p):
+def reroll(rollHash,rerollRule,Set):
     #Takes rollHash, rerollRule, and P for sample space and returns the subset of the sample space that fits the reroll rule.
     values=rerollRule(rollHash)
     inEvent=getRerollInEvent(rollHash,values)
-    return p.getSubset(inEvent)
+    return getSubset(Set,inEvent)
 
 def calculateOutcomes(rerollRule,p,rerolls=2): #TODO: K is not a partitioning. Redo math.
     #Takes the rerollRule and the number of rerolls desired
@@ -56,7 +56,7 @@ def calculateOutcomes(rerollRule,p,rerolls=2): #TODO: K is not a partitioning. R
     for r in range(rerolls):
         p0=ps[-1]
         #Prob(i)=sum((prob(k)*prob(i|k) for k in s)
-        ps.append(P({i: sum((p0[s][k] * p0[reroll(i, rerollRule, p0)][i] for k in s)) for i in s}))
+        ps.append(P({i: sum((p0[s][k] * p[reroll(k, rerollRule, s)][i] for k in s)) for i in s}))
         verifyNormalizationP(ps[r+1],s)
     return ps[-1][s]
 

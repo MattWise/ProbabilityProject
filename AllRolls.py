@@ -48,19 +48,10 @@ def reroll(rollHash,rerollRule,p):
     inEvent=getRerollInEvent(rollHash,values)
     return p.getSubset(inEvent)
 
-def rerollTest():
-    p=allRolls(3,2)
-    roll=[1,3]
-    rh=hashList(roll)
-    rerollRule=lambda x:tuple((value for value in x if value<2))
-    rerollRule=unHashDecorator(rerollRule)
-    print(reroll(rh,rerollRule,p))
-
-def calculateOutcomes(rerollRule,p,rerolls=2): #TODO: This is wrong. Fix it.
+def calculateOutcomes(rerollRule,p,rerolls=2): #TODO: K is not a partitioning. Redo math.
     #Takes the rerollRule and the number of rerolls desired
     #Returns a dictionary {finalRollValue:probability(finalRollValue) for finalRollValue in allPossibleRolls}
     s=p.SampleSpace
-    #verifyNormalizationP(p,s)
     ps=[p]#contains at index i the P object for roll values after i rerolls
     for r in range(rerolls):
         p0=ps[-1]
@@ -69,8 +60,23 @@ def calculateOutcomes(rerollRule,p,rerolls=2): #TODO: This is wrong. Fix it.
         verifyNormalizationP(ps[r+1],s)
     return ps[-1][s]
 
+"""
+Testing Functions
+"""
+
+def rerollTest():
+    p=allRolls(3,2)
+    roll=[1,3]
+    rh=hashList(roll)
+    rerollRule=lambda x:tuple((value for value in x if value<2))
+    rerollRule=unHashDecorator(rerollRule)
+    print(reroll(rh,rerollRule,p))
+
 def calculateOutcomesTest():
     p=allRolls(3,2)
     rerollRule=lambda x:tuple((value for value in x if value<2))
     rerollRule=unHashDecorator(rerollRule)
     calculateOutcomes(rerollRule,p)
+
+if __name__=="__main__":
+    calculateOutcomesTest()

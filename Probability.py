@@ -56,7 +56,6 @@ class P(dict):
         self.SampleSpace=frozenset(probDict.keys())
         self[self.SampleSpace]=probDict
         self.Weights={self.SampleSpace:1.}
-        #verifyNormalization(self,self.SampleSpace)
 
     def verifySampleSpace(self):
         #Debugging function.

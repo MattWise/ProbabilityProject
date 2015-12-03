@@ -57,7 +57,6 @@ def calculateOutcomes(rerollRule,p,rerolls=2): #TODO: K is not a partitioning. R
         p0=ps[-1]
         #Prob(i)=sum((prob(k)*prob(i|k) for k in s)
         ps.append(P({i: sum((p0[s][k] * p[reroll(k, rerollRule, s)][i] for k in s)) for i in s}))
-        verifyNormalizationP(ps[r+1],s)
     return ps[-1][s]
 
 """

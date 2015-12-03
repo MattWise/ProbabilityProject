@@ -64,3 +64,15 @@ def smallStraight(roll):
 
 
     return tuple(rerollList)
+
+def singles(x,roll):
+    keepList = []
+    rerollList = []
+
+    for i in roll:
+        if i == x:
+            keepList.append(i)
+        else:
+            rerollList.append(i)
+
+    return tuple(rerollList)

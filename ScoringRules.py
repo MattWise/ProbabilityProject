@@ -19,3 +19,24 @@ def chance(roll):
         return sum(roll)
     else:
         return 0
+
+
+def yahtzee(roll):
+    if CategoryRules.yahtzee(roll):
+        return 50
+    else:
+        return 0
+
+
+ def threeOfAKind(roll):
+     if CategoryRules.threeOfAKind(roll):
+         return sum(roll)
+     else:
+         return 0
+
+def fourOfAKind(roll):
+    if CategoryRules.fourOfAKind(roll):
+        return sum(roll)
+    else:
+        return 0
+

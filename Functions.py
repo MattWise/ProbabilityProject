@@ -146,6 +146,18 @@ def xOfAKind(x,roll):
             return True
     return False
 
+def singles(x,roll):
+    keepList = []
+    rerollList = []
+
+    for i in roll:
+        if i == x:
+            keepList.append(i)
+        else:
+            rerollList.append(i)
+
+    return tuple(rerollList)
+
 """
 Debugging Functions
 """

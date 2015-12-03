@@ -65,14 +65,15 @@ def smallStraight(roll):
 
     return tuple(rerollList)
 
-def singles(x,roll):
-    keepList = []
-    rerollList = []
-
-    for i in roll:
-        if i == x:
-            keepList.append(i)
-        else:
-            rerollList.append(i)
-
-    return tuple(rerollList)
+def aces(roll):
+    return singles(1,roll)
+def twos(roll):
+    return singles(2,roll)
+def threes(roll):
+    return singles(3,roll)
+def fours(roll):
+    return singles(4,roll)
+def fives(roll):
+    return singles(5,roll)
+def sixes(roll):
+    return singles(6,roll)

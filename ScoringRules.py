@@ -15,3 +15,22 @@ No other functions are allowed in this file. Put any helpers in Functions.py
 
 def chance(roll):
     return sum(roll)
+
+def yahtzee(roll):
+    if CategoryRules.yahtzee(roll):
+        return 50
+    else:
+        return 0
+
+
+ def threeOfAKind(roll):
+     if CategoryRules.threeOfAKind(roll):
+         return sum(roll)
+     else:
+         return 0
+
+def fourOfAKind(roll):
+    if CategoryRules.fourOfAKind(roll):
+        return sum(roll)
+    else:
+        return 0

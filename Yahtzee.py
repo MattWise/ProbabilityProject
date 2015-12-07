@@ -20,21 +20,19 @@ def compileRules(modules=(RerollRules,ScoringRules,CategoryRules)):
 
 Rules=compileRules()
 
-class Yahtzee:
-
-    def __init__(self,sides=6,dice=5):
-        self.sides=sides
-        self.dice=dice
-        self.p=allRolls(sides,dice)
-
-
 def problem3(n):
     #expected value and variance of chance score in n rerolls.
-    y=Yahtzee()
-    outcomes=calculateOutcomes(Rules["chance"][0],y.p,n)
-    verifyNormalizationProbDict(outcomes)
+    p=allRolls()
+    outcomes=calculateOutcomes(Rules["chance"][0],p,n)
     a=AnalyzeRandomVariable(Rules["chance"][1],outcomes)
     print("\nProblem 3: {} rerolls".format(n))
+    a.prnt()
+
+def problem5b():
+    p=allRolls()
+    outcomes=calculateOutcomesRandom(Rules["chance"][0],p,rerolls=0)
+    a=AnalyzeRandomVariable(Rules["chance"][1],outcomes)
+    print("\nProblem 5b:")
     a.prnt()
 
 problem3(2)

@@ -11,13 +11,47 @@ No other functions are allowed in this file. Put any helpers in Functions.py
 """
 
 def threeOfAKind(roll):
-    return xOfAKind(3,roll)
+    return categoryXOfAKind(3, roll)
 
 def fourOfAKind(roll):
-    return xOfAKind(4,roll)
+    return categoryXOfAKind(4, roll)
 
 def yahtzee(roll):
-    return xOfAKind(5,roll)
+    return categoryXOfAKind(5, roll)
 
 def chance(roll):
-    return sum(roll)>0
+    return True
+
+def fullHouse(roll):
+    for value,occurences in hashList(roll):
+        if occurences==2:
+            return categoryXOfAKind(3, roll)
+    return False
+
+def smallStraight(roll):
+    if 3 in roll and 4 in roll:
+        if 2 in roll:
+            if 1 in roll or 5 in roll:
+                return True
+        elif 5 in roll and 6 in roll:
+            return True
+    return False
+
+def largeStraight(roll):
+    if 2 in roll and 3 in roll and 4 in roll and 5 in roll:
+        if 1 in roll or 6 in roll:
+            return True
+    return False
+
+def aces(roll):
+    return 1 in roll
+def twos(roll):
+    return 2 in roll
+def threes(roll):
+    return 3 in roll
+def fours(roll):
+    return 4 in roll
+def fives(roll):
+    return 5 in roll
+def sixes(roll):
+    return 6 in roll

@@ -1,5 +1,6 @@
 from __future__ import division,print_function
 import functools
+import random as r
 import numpy as np,itertools as it
 import collections
 import decorator
@@ -7,9 +8,19 @@ import decorator
 File for small, general purpose classes and functions used by other modules.
 """
 
+#region Decorators
 """
 Decorators
 """
+
+def amortize(f):
+    #Returns wrapped function that returns the average value of f over times runs.
+    def wrapedF(times=10000,*args,**kwargs):
+        total=0.
+        for _ in range(times):
+            total+=f(*args,**kwargs)
+        return float(total)/float(times)
+    return wrapedF
 
 def memodict(f):
     """
@@ -88,7 +99,9 @@ class defDict(dict):
     def __missing__(self,key):
         self[key]=self.default
         return self.default
+#endregion
 
+#region Sets
 """
 Functions relating to manipulating sets.
 """
@@ -100,7 +113,9 @@ def getSubset(Set,inEvent):
     #Cheated to memioze this. Treat inEvent as an immutable, or else.
     #Must be a class function becuases memoization is only valid for the same sample space.
     return frozenset(event for event in Set if inEvent(event))
+#endregion
 
+#region Hashing
 """
 Functions relating to roll hashing and unhashing.
 
@@ -135,29 +150,78 @@ def unHashList(dct):
             lst.append(value)
     return lst
 
+def getNumberOfEach(lst): #numberOfEach[i] is the list of values which occur in the roll i times
+    numberOfEach=[[] for _ in range(6)]
+    for value,occurences in hashList(lst):
+        numberOfEach[occurences].append(value)
+    for value in range(1,7):
+        if not value in lst:
+            numberOfEach[0].append(value)
+    return numberOfEach
+#endregion
+
+#region Rules
 """
 Helper functions for the rules, since the only functions allowed in those files are the rules themselves.
 """
 
-def xOfAKind(x,roll):
+def categoryXOfAKind(x, roll):
     rolldict=unHashDict(hashList(roll))
     for key in rolldict.keys():
         if rolldict[key]>=x:
             return True
     return False
 
-def singles(x,roll):
-    keepList = []
+def rerollXOfAKind(roll):
+    numberOfEach=getNumberOfEach(roll)
+    numberOfEach.reverse()
+    for number in numberOfEach:
+        if len(number)>0:
+            keep=number[0]
+            break
+    return tuple((value for value in roll if value!=keep))
+
+
+def rerollSingles(x, roll):
     rerollList = []
 
     for i in roll:
-        if i == x:
-            keepList.append(i)
-        else:
+        if i != x:
             rerollList.append(i)
 
     return tuple(rerollList)
 
+def scoringSingles(x, roll):
+    return sum((value for value in roll if value==x))
+
+def listDuplicates(lst):
+    ret=[]
+    for value,occurences in hashList(lst):
+        if occurences>1:
+            for excess in range(occurences-1):
+                ret.append(value)
+    return ret
+
+def removeDuplicates(lst):
+    duplicates=listDuplicates(lst)
+    for duplicate in duplicates:
+        lst.remove(duplicate)
+
+def straightCandidate(size,roll): #Not implemented.
+    """
+    roll=roll[:] #Sets the name "roll" to point to a copy of the input rather than the input itself to prevent undesired mutation.
+    duplicates=listDuplicates(roll)
+    for duplicate in duplicates:
+        roll.remove(duplicate)
+    roll.sort()
+    for i in range(6-size):
+        try:
+            roll[i]
+    """
+    pass
+#endregion
+
+#region Debugging
 """
 Debugging Functions
 """
@@ -185,3 +249,5 @@ def testHash(lst):
     hshs=[hashList(L) for L in listsToHash]
     for h in hshs:
         assert h==hsh,"{}!={}".format(h,hshs)
+
+#endregion

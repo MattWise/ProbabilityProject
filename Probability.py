@@ -1,4 +1,5 @@
 from __future__ import division,print_function
+from random import random
 from Functions import *
 from types import *
 
@@ -56,5 +57,16 @@ class P(dict):
         #Returns probability of the compound event represented by the set of simple events "subset".
         #Memiozed, of course, via the dictionary behavior of P.
         self[subset] #Ensures subset in P
-        assert subset in self
         return self.Weights[subset]
+
+    @staticmethod
+    def randomEvent(probdict):
+        r=random() #Random float value between 0 and 1.
+        sum=0.
+        for key in probdict.keys():
+            sum+=probdict[key]
+            if sum>=r:
+                return key
+        assert False,"randomEvent isn't working. Floating point issue?"
+        return probdict.keys()[-1] #If the above assertion occurs occasionally but not so frequently as to sugguest a genuine issue, this line should fix rare floating point inaccuracies.
+

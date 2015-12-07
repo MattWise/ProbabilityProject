@@ -10,6 +10,8 @@ Functions that should:
 No other functions are allowed in this file. Put any helpers in Functions.py
 """
 
+#Sort of forgot I already implemented this and implemented it again, better. Keeping this in case the other doesn't work.
+"""
 def yahtzee(roll):
     #Yatzhee reroll rule. Keeps the ones you have most of and rerolls the rest.
     values=[]
@@ -25,55 +27,71 @@ def yahtzee(roll):
     del rolldict[mode]
     values=unHashList(rolldict)
     return tuple(values)
-
+"""
 def chance(roll):
     return tuple((value for value in roll if value<4))
 
 def smallStraight(roll):
+    roll=roll[:] #Sets the name "roll" to point to a copy of the input rather than the input itself to prevent undesired mutation.
+    rerollList=listDuplicates(roll)
+    keepList=[3,4]
 
-    #ToDo Make this work
+    if 2 in roll and 5 in roll:
+        keepList.append(2)
+        keepList.append(5)
+    if 1 in roll and 2 in roll:
+        keepList.append(2)
+        keepList.append(1)
+    if not 1 in roll and not 2 in roll:
+        keepList.append(5)
+    if 5 in roll and 6 in roll:
+        keepList.append(5)
+        keepList.append(6)
+    if not 5 in roll and not 6 in roll:
+        keepList.append(2)
 
-    def helper(a,b,c):
-        #if a, b and c in roll, discards c
-        if a in keeplst and b in keeplst and c in keeplst:
-            keeplst.remove(c)
-
-    def helper2(a,b):
-        #if a and b in roll, discards b
-        if a not in keeplst and b in keeplst:
-            keeplst.remove(b)
-
-    def invertList(sample,lst):
-        invertedlst=[]
-        for value in lst:
-            pass
-        return None
-
-
-    keeplst=roll[:]
-    helper(1,2,5)
-    helper2(2,1)
-    helper(6,5,2)
-    helper2(5,6)
-    helper(2,5,1)
-    helper(2,5,6)
-
-    list(set(keeplst))
-    rerollList=[]
-
-
+    for value in removeDuplicates(roll):
+        if not value in keepList:
+            rerollList.append(value)
 
     return tuple(rerollList)
 
+def largeStraight(roll):
+    rerollList=listDuplicates(roll)
+    if 1 in roll and 6 in roll:
+        rerollList.append(6)
+    return rerollList
+
+def fullHouse(roll):
+    numberOfEach=getNumberOfEach(roll)
+    if len(numberOfEach[2])==2:
+        return tuple(numberOfEach[1])
+    elif len(numberOfEach[2])==1:
+        if len(numberOfEach[3])==1:
+            return ()
+        else:
+            return tuple(roll)
+    elif len(numberOfEach[3])==1:
+        return (numberOfEach[1][0],)
+    elif len(numberOfEach[4])==1:
+        return (numberOfEach[4][0],)
+    elif len(numberOfEach[5])==1:
+        r=numberOfEach[5][0]
+        return (r,r)
+    else:
+        return tuple(roll)
+
+threeOfAKind=fourOfAKind=yahtzee=rerollXOfAKind
+
 def aces(roll):
-    return singles(1,roll)
+    return rerollSingles(1, roll)
 def twos(roll):
-    return singles(2,roll)
+    return rerollSingles(2, roll)
 def threes(roll):
-    return singles(3,roll)
+    return rerollSingles(3, roll)
 def fours(roll):
-    return singles(4,roll)
+    return rerollSingles(4, roll)
 def fives(roll):
-    return singles(5,roll)
+    return rerollSingles(5, roll)
 def sixes(roll):
-    return singles(6,roll)
+    return rerollSingles(6, roll)

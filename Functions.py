@@ -84,11 +84,11 @@ def memoizeAllRolls(f):
     def memoizedAllRolls(sides=6,dice=5):
         name="allRolls{}{}.p".format(sides,dice)
         if os.path.isfile(name):
-            with open(name,"r") as file:
+            with open(name,"rb") as file:
                 return pickle.load(file)
         else:
             ret=f(sides,dice)
-            with open(name,"w") as file:
+            with open(name,"wb") as file:
                 pickle.dump(ret,file)
             return ret
     return memoizedAllRolls

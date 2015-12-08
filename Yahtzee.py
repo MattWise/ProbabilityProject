@@ -20,6 +20,15 @@ def compileRules(modules=(RerollRules,ScoringRules,CategoryRules)):
 
 Rules=compileRules()
 
+def problem1():
+    p=allRolls()
+    print("\nProblem 1:\n")
+    for name in Rules.keys():
+        outcomes=calculateOutcomes(Rules[name][0],p)
+        a=AnalyzeRandomVariable(Rules[name][2],outcomes)
+        print("\n{}:".format(name))
+        a.prnt()
+
 def problem3(n):
     #expected value and variance of chance score in n rerolls.
     p=allRolls()
@@ -35,4 +44,4 @@ def problem5b():
     print("\nProblem 5b:")
     a.prnt()
 
-problem3(2)
+problem1()

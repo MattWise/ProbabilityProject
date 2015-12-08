@@ -40,5 +40,5 @@ class AnalyzeRandomVariable:
         return expSquared-(self.expectedValue)**2
 
     def prnt(self):
-        print("\n{}:\n\nExpected Value: {}\nVariance: {}".format(self.randomVariable.__name__,self.expectedValue,self.variance))
+        print("\nExpected Value: {}\nVariance: {}".format(self.expectedValue,self.variance))
 

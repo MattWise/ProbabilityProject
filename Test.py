@@ -3,6 +3,7 @@ import itertools as it,math as m,numpy as np,random as r
 from AllRolls import *
 from Functions import *
 import ScoringRules
+import os
 
 
 """
@@ -23,4 +24,4 @@ print(len(keys))
 print(sides**dice)
 """
 
-calculateOutcomesTest()
+print(os.getcwd())

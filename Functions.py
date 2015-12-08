@@ -1,5 +1,7 @@
 from __future__ import division,print_function
 import functools
+import cPickle as pickle
+import os
 import random as r
 import numpy as np,itertools as it
 import collections
@@ -77,6 +79,20 @@ def memoizeGetSubset(getSubset):
             cache[key]=ret
             return ret
     return memoizedGetSubset
+
+def memoizeAllRolls(f):
+    def memoizedAllRolls(sides=6,dice=5):
+        name="allRolls{}{}".format(sides,dice)
+        if os.path.isfile(name):
+            with open(name,"r") as file:
+                return pickle.load(file)
+        else:
+            ret=f(sides,dice)
+            with open(name,"w") as file:
+                pickle.dump(ret,file)
+            return ret
+    return memoizedAllRolls
+
 
 def squared(func):
     def squaredFunc(x):
@@ -206,6 +222,7 @@ def removeDuplicates(lst):
     duplicates=listDuplicates(lst)
     for duplicate in duplicates:
         lst.remove(duplicate)
+    return lst
 
 def straightCandidate(size,roll): #Not implemented.
     """
@@ -251,3 +268,12 @@ def testHash(lst):
         assert h==hsh,"{}!={}".format(h,hshs)
 
 #endregion
+
+if __name__=="__main__":
+    l=[6,6,6,6,6]
+    print(listDuplicates(l))
+    print(l)
+    removeDuplicates(l)
+    print(l)
+    removeDuplicates(l)
+    print(l)

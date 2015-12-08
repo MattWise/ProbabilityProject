@@ -50,7 +50,8 @@ def smallStraight(roll):
     if not 5 in roll and not 6 in roll:
         keepList.append(2)
 
-    for value in removeDuplicates(roll):
+    removeDuplicates(roll)
+    for value in roll:
         if not value in keepList:
             rerollList.append(value)
 
@@ -60,7 +61,7 @@ def largeStraight(roll):
     rerollList=listDuplicates(roll)
     if 1 in roll and 6 in roll:
         rerollList.append(6)
-    return rerollList
+    return tuple(rerollList)
 
 def fullHouse(roll):
     numberOfEach=getNumberOfEach(roll)

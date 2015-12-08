@@ -8,6 +8,7 @@ from types import *
 Functions related to rolling dice
 """
 
+@memoizeAllRolls
 def allRolls(sides=6, dice=5):
 
     keys=tuple((tuple(i) for i in it.product(range(1,sides+1), repeat=dice)))

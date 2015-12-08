@@ -82,7 +82,7 @@ def memoizeGetSubset(getSubset):
 
 def memoizeAllRolls(f):
     def memoizedAllRolls(sides=6,dice=5):
-        name="allRolls{}{}".format(sides,dice)
+        name="allRolls{}{}.p".format(sides,dice)
         if os.path.isfile(name):
             with open(name,"r") as file:
                 return pickle.load(file)

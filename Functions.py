@@ -55,7 +55,7 @@ def memoizeGetSubset(getSubset):
     getSubset is O(len(sampleSpace)), which is potentially very large.
     Further, the only easy way to cut down on calls to getSubset is memoization.
     inEvent functions are generally going to be generated dynamically from data P can't access, so the only place to memoize is here.
-    Therefore, the performance gains from memoizing getSubset are potentially huge in an already unweildy algoritm.
+    Therefore, the performance gains from memoizing getSubset are potentially huge in an already unwieldy algorithm.
 
     I had to cheat to get this to work. A lot.
     Functions are not hashable types, but integer IDs are.
@@ -127,7 +127,6 @@ def getSubset(Set,inEvent):
     #inEvent is a function of signature bool inEvent(frozenset simpleEvent) which, given a simple event, returns whether that event is a member of the compound event.
     #Returns the subset of the sample space for which inEvent is true, representing a compound event.
     #Cheated to memioze this. Treat inEvent as an immutable, or else.
-    #Must be a class function becuases memoization is only valid for the same sample space.
     return frozenset(event for event in Set if inEvent(event))
 #endregion
 
@@ -224,18 +223,6 @@ def removeDuplicates(lst):
         lst.remove(duplicate)
     return lst
 
-def straightCandidate(size,roll): #Not implemented.
-    """
-    roll=roll[:] #Sets the name "roll" to point to a copy of the input rather than the input itself to prevent undesired mutation.
-    duplicates=listDuplicates(roll)
-    for duplicate in duplicates:
-        roll.remove(duplicate)
-    roll.sort()
-    for i in range(6-size):
-        try:
-            roll[i]
-    """
-    pass
 #endregion
 
 #region Debugging

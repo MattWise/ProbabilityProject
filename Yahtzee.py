@@ -32,7 +32,7 @@ def problem1():
         print("\n{}:".format(name))
         a.prnt()
 
-def problem3(N=(0,1,2,3)):
+def problem3(N=(0,1,2,3,4,5,6,7,8,9)):
     #expected value and variance of chance score in n rerolls.
     p=allRolls()
     print("\nProblem 3: Chance in n rerolls\n")
@@ -74,9 +74,15 @@ def problem5c(category="aces",rerolls=2,times=10000):
     randomA.prnt()
 
 
+p=allRolls()
+outcomes=calculateOutcomes(Rules["aces"][0],p,2)
+a=AnalyzeRandomVariable(Rules["aces"][2],outcomes)
+print(a.expectedValue)
 
+"""
 problem1()
 problem3()
 problem4()
 problem5b()
 problem5c()
+"""

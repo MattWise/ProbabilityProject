@@ -43,11 +43,19 @@ def getRerollInEvent(rollHash,values):
         return True
     return inEvent
 
+"""
 def reroll(rollHash,rerollRule,Set):
     #Takes rollHash, rerollRule, and a sample space and returns the subset of the sample space that fits the reroll rule.
-    values=rerollRule(rollHash)
+    valuesToReroll=rerollRule(rollHash)
     inEvent=getRerollInEvent(rollHash,values)
     return getSubset(Set,inEvent)
+"""
+def reroll(rollHash,rerollRule,Set):
+    valuesToKeep=getTheRest(unHashList(unHashDict(rollHash)),rerollRule(rollHash))
+    
+
+def getPi(i, k, rerollRule, s):
+
 
 def calculateOutcomes(rerollRule,p,rerolls=2):
     #Takes the rerollRule and the number of rerolls desired
@@ -57,7 +65,18 @@ def calculateOutcomes(rerollRule,p,rerolls=2):
     for r in range(rerolls):
         p0=ps[-1]
         #Prob(i)=sum((prob(k)*prob(i|k) for k in s)
-        ps.append(P({i: sum((p0[s][k] * p[reroll(k, rerollRule, s)][i] for k in s)) for i in s}))
+        probDict={}
+        for i in s:
+            tot=0.
+            for k in s:
+                pk=p0[s][k] #Probability of getting event k in the last roll
+                #pi=p[reroll(k,rerollRule,s)][i] #Probability of i given k
+                pi= getPi(i, k, rerollRule, s)
+                tot+=pk*pi
+            probDict[i]=tot
+        ps.append(P(probDict))
+
+
     return ps[-1][s]
 
 def calculateOutcomesRandom(rerollRule,p,rerolls=2,times=10000):

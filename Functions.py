@@ -128,6 +128,24 @@ def getSubset(Set,inEvent):
     #Returns the subset of the sample space for which inEvent is true, representing a compound event.
     #Cheated to memioze this. Treat inEvent as an immutable, or else.
     return frozenset(event for event in Set if inEvent(event))
+
+def getNumberOfEach(lst): #numberOfEach[i] is the list of values which occur in the roll i times
+    numberOfEach=[[] for _ in range(6)]
+    for value,occurences in hashList(lst):
+        numberOfEach[occurences].append(value)
+    for value in range(1,7):
+        if not value in lst:
+            numberOfEach[0].append(value)
+    return numberOfEach
+
+def getTheRest(parentList,subList):
+    #"Subtracts" the subList from the parentList, returning the tokens in the parentList but not in the subList
+    #Not particularly efficient, optimize before use with large lists.
+    ret=parentList[:]
+    for element in subList:
+        del ret[ret.index(element)]
+    return ret
+
 #endregion
 
 #region Hashing
@@ -165,14 +183,6 @@ def unHashList(dct):
             lst.append(value)
     return lst
 
-def getNumberOfEach(lst): #numberOfEach[i] is the list of values which occur in the roll i times
-    numberOfEach=[[] for _ in range(6)]
-    for value,occurences in hashList(lst):
-        numberOfEach[occurences].append(value)
-    for value in range(1,7):
-        if not value in lst:
-            numberOfEach[0].append(value)
-    return numberOfEach
 #endregion
 
 #region Rules

@@ -155,17 +155,15 @@ Functions relating to roll hashing and unhashing.
 Not actually a hash, of course. These functions merely convert an ordered list with repeats into a hashable, unordered set that retains information on repeats.
 """
 
-class RollHash:
+class RollHash(frozenset):
 
-    def __init__(cls,rollList=None,rollDict=None):
+    def __init__(self,rollList=None,rollDict=None):
         if rollList and not rollDict:
             rollDict=defDict(0)
             for element in rollList:
                 rollDict[element]+=1
         self.length=sum((occurences for _,occurences in rollDict.iteritems()))
-        return frozenset.__new__(((element,occurrences) for element,occurrences in rollDict.iteritems()))
-    def __init__(self):
-        self.length=sum((occurences for _,occurences in rollDict.iteritems()))
+        super(RollHash,self).__init__(((element,occurrences) for element,occurrences in rollDict.iteritems()))
 
     def dct(self):
         return {element:occurrences for element,occurrences in self}

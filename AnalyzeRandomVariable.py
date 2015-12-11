@@ -24,7 +24,7 @@ class AnalyzeRandomVariable:
 
     def verify(self):
         #debugging function
-        assert equalWithinTollerance(sum((self.probabilities[key] for key in self.probabilities.keys())), 1),sum(self.values)
+        assert equalWithinTolerance(sum((self.probabilities[key] for key in self.probabilities.keys())),1),sum(self.values)
 
     def getValues(self,f):
         values=[]

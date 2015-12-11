@@ -131,8 +131,8 @@ def getSubset(Set,inEvent):
 
 def getNumberOfEach(lst): #numberOfEach[i] is the list of values which occur in the roll i times
     numberOfEach=[[] for _ in range(6)]
-    for value,occurences in hashList(lst):
-        numberOfEach[occurences].append(value)
+    for value,occurrences in hashList(lst):
+        numberOfEach[occurrences].append(value)
     for value in range(1,7):
         if not value in lst:
             numberOfEach[0].append(value)
@@ -171,8 +171,8 @@ def hashDict(dct):
 
 def unHashDict(dctHash):
     dct=defDict(0)
-    for (value,occurences) in dctHash:
-        dct[value]=occurences
+    for (value,occurrences) in dctHash:
+        dct[value]=occurrences
     return dct
 
 def unHashList(dct):
@@ -182,6 +182,12 @@ def unHashList(dct):
         for occurrence in range(dct[value]):
             lst.append(value)
     return lst
+
+def addHashes(hash1,hash2):
+    ret=unHashList(unHashDict(hash1))
+    for value in unHashList(unHashDict(hash2)):
+        ret.append(value)
+    return hashList(ret)
 
 #endregion
 
@@ -221,9 +227,9 @@ def scoringSingles(x, roll):
 
 def listDuplicates(lst):
     ret=[]
-    for value,occurences in hashList(lst):
-        if occurences>1:
-            for excess in range(occurences-1):
+    for value,occurrences in hashList(lst):
+        if occurrences>1:
+            for excess in range(occurrences-1):
                 ret.append(value)
     return ret
 
@@ -246,9 +252,9 @@ def verifyNormalizationP(p, subset):
 
 def verifyNormalizationProbDict(probdict):
     a=sum(probdict[key] for key in probdict.keys())
-    assert equalWithinTollerance(a, 1.), "total p = {}".format(a)
+    assert equalWithinTolerance(a,1.),"total p = {}".format(a)
 
-def equalWithinTollerance(a, b):
+def equalWithinTolerance(a,b):
     #For checking floating point numbers
     return abs(a-b)<(10**-5)
 

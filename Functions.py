@@ -82,11 +82,13 @@ def memoizeGetSubset(getSubset):
 
 def memoizeAllRolls(f):
     def memoizedAllRolls(sides=6,dice=5):
-        name="allRolls{}{}.p".format(sides,dice)
+        name="allRollsCache\\allRolls{}{}.p".format(sides,dice)
         if os.path.isfile(name):
             with open(name,"rb") as file:
                 return pickle.load(file)
         else:
+            if not os.path.exists("allRollsCache"):
+                os.makedirs("allRollsCache")
             ret=f(sides,dice)
             with open(name,"wb") as file:
                 pickle.dump(ret,file)

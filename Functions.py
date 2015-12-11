@@ -101,8 +101,8 @@ def squared(func):
 
 def unHashDecorator(rule):
     #For application to the functions in CategoryRules, RerollRules, and Scoring Rules. Allows them to keep the roll-as-list input while allowing them to be called using hashes.
-    def hashCompatibleRule(rollHash):
-        return rule(rollHash.lst())
+    def hashCompatibleRule(hash):
+        return rule(unHashList(unHashDict(hash)))
     hashCompatibleRule.__name__=rule.__name__
     return hashCompatibleRule
 
@@ -131,7 +131,7 @@ def getSubset(Set,inEvent):
 
 def getNumberOfEach(lst): #numberOfEach[i] is the list of values which occur in the roll i times
     numberOfEach=[[] for _ in range(6)]
-    for value,occurences in RollHash(lst):
+    for value,occurences in hashList(lst):
         numberOfEach[occurences].append(value)
     for value in range(1,7):
         if not value in lst:
@@ -153,35 +153,36 @@ def getTheRest(parentList,subList):
 Functions relating to roll hashing and unhashing.
 
 Not actually a hash, of course. These functions merely convert an ordered list with repeats into a hashable, unordered set that retains information on repeats.
+The dictionary intermediates contain the same information, but are mutable, and thus nonhashable.
 """
 
-class RollHash(frozenset):
+def hashList(lst):
+    #returns frozenset of tuples of form (value, # of occurrences).
+    dct=defDict(0)
+    for element in lst:
+        dct[element]+=1
+    return hashDict(dct)
 
-    def __init__(self,rollList=None,rollDict=None):
-        if rollList and not rollDict:
-            rollDict=defDict(0)
-            for element in rollList:
-                rollDict[element]+=1
-        self.length=sum((occurences for _,occurences in rollDict.iteritems()))
-        super(RollHash,self).__init__(((element,occurrences) for element,occurrences in rollDict.iteritems()))
+def hashDict(dct):
+    ret=[]
+    for key in sorted(dct.keys()):
+        ret.append((key,dct[key]))
+    return frozenset(ret)
 
-    def dct(self):
-        return {element:occurrences for element,occurrences in self}
+def unHashDict(dctHash):
+    dct=defDict(0)
+    for (value,occurences) in dctHash:
+        dct[value]=occurences
+    return dct
 
-    def lst(self):
-        lst=[]
-        dct=self.dct()
-        for value in dct.keys():
-            for occurrence in range(dct[value]):
-                lst.append(value)
-        return lst
+def unHashList(dct):
+    #Inverse of hashList. Order is lost.
+    lst=[]
+    for value in dct.keys():
+        for occurrence in range(dct[value]):
+            lst.append(value)
+    return lst
 
-    def __add__(self, other):
-        L1=self.lst()
-        L2=other.lst()
-        for element in L2:
-            L1.append(L2)
-        return RollHash(L2)
 #endregion
 
 #region Rules
@@ -190,7 +191,7 @@ Helper functions for the rules, since the only functions allowed in those files 
 """
 
 def categoryXOfAKind(x, roll):
-    rolldict=RollHash(roll).dct()
+    rolldict=unHashDict(hashList(roll))
     for key in rolldict.keys():
         if rolldict[key]>=x:
             return True
@@ -220,7 +221,7 @@ def scoringSingles(x, roll):
 
 def listDuplicates(lst):
     ret=[]
-    for value,occurences in RollHash(lst):
+    for value,occurences in hashList(lst):
         if occurences>1:
             for excess in range(occurences-1):
                 ret.append(value)
@@ -252,14 +253,14 @@ def equalWithinTollerance(a, b):
     return abs(a-b)<(10**-5)
 
 def testHash(lst):
-    hsh=RollHash(lst)
+    hsh=hashList(lst)
     listsToHash=[]
     for i in np.arange(100):
         a=r.randint(0,len(lst)-1)
         b=r.randint(0,len(lst)-1)
         lst[a],lst[b]=lst[b],lst[a]
         listsToHash.append(lst[:])
-    hshs=[RollHash(L) for L in listsToHash]
+    hshs=[hashList(L) for L in listsToHash]
     for h in hshs:
         assert h==hsh,"{}!={}".format(h,hshs)
 

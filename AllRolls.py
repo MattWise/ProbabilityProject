@@ -12,18 +12,18 @@ Functions related to rolling dice
 def allRolls(sides=6, dice=5):
 
     keys=tuple((tuple(i) for i in it.product(range(1,sides+1), repeat=dice)))
+    assert len(keys)==sides**dice
     prob=1/(sides**dice)
 
     rollProbs={key:prob for key in keys}
     pRolls= P(rollProbs)
-    events=frozenset((RollHash(rollList=roll) for roll in keys))
+    events=frozenset((hashList(roll) for roll in keys))
     eventProbs={}
     for event in events:
-        prob=pRolls.probabilityOfCompoundEvent(getSubset(pRolls.SampleSpace,lambda lst:RollHash(lst)==event))
+        prob=pRolls.probabilityOfCompoundEvent(getSubset(pRolls.SampleSpace,lambda lst:hashList(lst)==event))
         eventProbs[event]=prob
     return P(eventProbs)
 
-"""
 @memodict2 #Memoization here ensures identically same function returned, which allows memoization of P.getSubset. This is why rollHash and values are used rather than roll and rerollRule.
 def getRerollInEvent(rollHash,values):
 
@@ -43,21 +43,19 @@ def getRerollInEvent(rollHash,values):
         return True
     return inEvent
 
+"""
 def reroll(rollHash,rerollRule,Set):
     #Takes rollHash, rerollRule, and a sample space and returns the subset of the sample space that fits the reroll rule.
     valuesToReroll=rerollRule(rollHash)
     inEvent=getRerollInEvent(rollHash,values)
     return getSubset(Set,inEvent)
 """
+def reroll(rollHash,rerollRule,Set):
+    valuesToKeep=getTheRest(unHashList(unHashDict(rollHash)),rerollRule(rollHash))
+    
 
-def reroll(rollHash,rerollRule,p):
+def getPi(i, k, rerollRule, s):
 
-    valuesToKeep=RollHash(getTheRest(rollHash.lst(),rerollRule(rollHash)))
-    subP=allRolls(6,rollHash.length-valuesToKeep.length)
-    probDict=defDict(0)
-    for subHash,probability in subP[subP.SampleSpace].iteriterms():
-        probDict[valuesToKeep+subHash]=probability
-    return probDict
 
 def calculateOutcomes(rerollRule,p,rerolls=2):
     #Takes the rerollRule and the number of rerolls desired
@@ -73,10 +71,11 @@ def calculateOutcomes(rerollRule,p,rerolls=2):
             for k in s:
                 pk=p0[s][k] #Probability of getting event k in the last roll
                 #pi=p[reroll(k,rerollRule,s)][i] #Probability of i given k
-                pi=reroll(k,rerollRule,s)[i]
+                pi= getPi(i, k, rerollRule, s)
                 tot+=pk*pi
             probDict[i]=tot
         ps.append(P(probDict))
+
 
     return ps[-1][s]
 
@@ -102,7 +101,7 @@ Testing Functions
 def rerollTest():
     p=allRolls(3,2)
     roll=[1,3]
-    rh=RollHash(roll)
+    rh=hashList(roll)
     rerollRule=lambda x:tuple((value for value in x if value<2))
     rerollRule=unHashDecorator(rerollRule)
     print(reroll(rh,rerollRule,p))

@@ -23,7 +23,7 @@ def chance(roll):
     return True
 
 def fullHouse(roll):
-    for value,occurences in RollHash(roll):
+    for value,occurences in hashList(roll):
         if occurences==2:
             return categoryXOfAKind(3, roll)
     return False

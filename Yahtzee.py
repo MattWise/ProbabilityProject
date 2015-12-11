@@ -79,8 +79,10 @@ outcomes=calculateOutcomes(Rules["aces"][0],p,2)
 a=AnalyzeRandomVariable(Rules["aces"][2],outcomes)
 print(a.expectedValue)
 
+"""
 problem1()
 problem3()
 problem4()
 problem5b()
 problem5c()
+"""

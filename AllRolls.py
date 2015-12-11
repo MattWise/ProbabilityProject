@@ -43,11 +43,31 @@ def getRerollInEvent(rollHash,values):
         return True
     return inEvent
 
+"""
 def reroll(rollHash,rerollRule,Set):
     #Takes rollHash, rerollRule, and a sample space and returns the subset of the sample space that fits the reroll rule.
-    values=rerollRule(rollHash)
+    valuesToReroll=rerollRule(rollHash)
     inEvent=getRerollInEvent(rollHash,values)
     return getSubset(Set,inEvent)
+"""
+
+@memodict2
+def rerollHelper(size,valuesToKeep):
+    subP=allRolls(6,size)
+    probDict=defDict(0)
+    for subHash,probability in subP[subP.SampleSpace].iteritems():
+        probDict[addHashes(valuesToKeep,subHash)]=probability
+    return probDict
+
+def reroll(rollHash,rerollRule,p):
+    rollList=unHashList(unHashDict(rollHash))
+    valuesToKeep=hashList(getTheRest(rollList,rerollRule(rollHash)))
+    size=len(rollList)-len(unHashList(unHashDict(valuesToKeep)))
+    if size>0:
+        return rerollHelper(size,valuesToKeep)
+    else:
+        return p[p.SampleSpace]
+
 
 def calculateOutcomes(rerollRule,p,rerolls=2):
     #Takes the rerollRule and the number of rerolls desired
@@ -57,21 +77,31 @@ def calculateOutcomes(rerollRule,p,rerolls=2):
     for r in range(rerolls):
         p0=ps[-1]
         #Prob(i)=sum((prob(k)*prob(i|k) for k in s)
-        ps.append(P({i: sum((p0[s][k] * p[reroll(k, rerollRule, s)][i] for k in s)) for i in s}))
+        probDict={}
+        for i in s:
+            tot=0.
+            for k in s:
+                pk=p0[s][k] #Probability of getting event k in the last roll
+                #pi=p[reroll(k,rerollRule,s)][i] #Probability of i given k
+                pi=reroll(k,rerollRule,p)[i]
+                tot+=pk*pi
+            probDict[i]=tot
+        ps.append(P(probDict))
+
     return ps[-1][s]
 
-def calculateOutcomesRandom(rerollRule,p,rerolls=2,times=10000):
-    s=p.SampleSpace
-    probdict=defDict()
-    def singleOutcome(rerollRule,p,rerolls):
-        ps=[p]
+def calculateOutcomesRandom(rerollRule,rerolls=2,times=10000):
+    probdict=defDict(0)
+    for time in range(times):
+        roll=[r.randint(1,6) for _ in range(5)]
         for _ in range(rerolls):
-            p0=ps[-1]
-            ps.append(P(p[reroll(P.randomEvent(p0[s]),rerollRule,s)]))
-        return P.randomEvent(ps[-1][s])
-    for _ in range(times):
-        probdict[singleOutcome(rerollRule,p,rerolls)]+=1
-    weight=sum((probdict[event] for event in s))
+            valuesToRemove=rerollRule(hashList(roll))
+            for value in valuesToRemove:
+                roll.remove(value)
+            for i in range(len(valuesToRemove)):
+                roll.append(r.randint(1,6))
+        probdict[hashList(roll)]+=1
+    weight=sum((probdict[event] for event in probdict.keys()))
     probdict.update(((key,value/weight) for key,value in probdict.items()))
     return probdict
 

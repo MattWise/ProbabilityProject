@@ -51,7 +51,7 @@ def problem4(category="aces",rerolls=2):
 
 def problem5b(times=10000):
     p=allRolls()
-    randomOutcomes=calculateOutcomesRandom(Rules["chance"][0],p,rerolls=0,times=times)
+    randomOutcomes=calculateOutcomesRandom(Rules["chance"][0],rerolls=0,times=times)
     outcomes=calculateOutcomes(Rules["chance"][0],p,0)
     a=AnalyzeRandomVariable(Rules["chance"][1],outcomes)
     randomA=AnalyzeRandomVariable(Rules["chance"][1],randomOutcomes)
@@ -60,6 +60,7 @@ def problem5b(times=10000):
     a.prnt()
     print("\nRandom:")
     randomA.prnt()
+    print("\nVariance of Mean: {}".format(a.variance/times))
 
 def problem5c(category="aces",rerolls=2,times=10000):
     p=allRolls()
@@ -68,21 +69,14 @@ def problem5c(category="aces",rerolls=2,times=10000):
     a=AnalyzeRandomVariable(Rules[category][1],outcomes)
     print("\nAnalytic:")
     a.prnt()
-    randomOutcomes=calculateOutcomesRandom(Rules[category][0],p,rerolls,times)
+    randomOutcomes=calculateOutcomesRandom(Rules[category][0],rerolls,times)
     randomA=AnalyzeRandomVariable(Rules[category][1],randomOutcomes)
     print("\nRandom:")
     randomA.prnt()
+    print("\nVariance of Mean: {}".format(a.variance/times))
 
-
-p=allRolls()
-outcomes=calculateOutcomes(Rules["aces"][0],p,2)
-a=AnalyzeRandomVariable(Rules["aces"][2],outcomes)
-print(a.expectedValue)
-
-"""
 problem1()
 problem3()
 problem4()
 problem5b()
 problem5c()
-"""

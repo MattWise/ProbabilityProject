@@ -82,11 +82,13 @@ def memoizeGetSubset(getSubset):
 
 def memoizeAllRolls(f):
     def memoizedAllRolls(sides=6,dice=5):
-        name="allRolls{}{}.p".format(sides,dice)
+        name="allRollsCache\\allRolls{}{}.p".format(sides,dice)
         if os.path.isfile(name):
             with open(name,"rb") as file:
                 return pickle.load(file)
         else:
+            if not os.path.exists("allRollsCache"):
+                os.makedirs("allRollsCache")
             ret=f(sides,dice)
             with open(name,"wb") as file:
                 pickle.dump(ret,file)
@@ -128,6 +130,24 @@ def getSubset(Set,inEvent):
     #Returns the subset of the sample space for which inEvent is true, representing a compound event.
     #Cheated to memioze this. Treat inEvent as an immutable, or else.
     return frozenset(event for event in Set if inEvent(event))
+
+def getNumberOfEach(lst): #numberOfEach[i] is the list of values which occur in the roll i times
+    numberOfEach=[[] for _ in range(6)]
+    for value,occurrences in hashList(lst):
+        numberOfEach[occurrences].append(value)
+    for value in range(1,7):
+        if not value in lst:
+            numberOfEach[0].append(value)
+    return numberOfEach
+
+def getTheRest(parentList,subList):
+    #"Subtracts" the subList from the parentList, returning the tokens in the parentList but not in the subList
+    #Not particularly efficient, optimize before use with large lists.
+    ret=parentList[:]
+    for element in subList:
+        del ret[ret.index(element)]
+    return ret
+
 #endregion
 
 #region Hashing
@@ -153,8 +173,8 @@ def hashDict(dct):
 
 def unHashDict(dctHash):
     dct=defDict(0)
-    for (value,occurences) in dctHash:
-        dct[value]=occurences
+    for (value,occurrences) in dctHash:
+        dct[value]=occurrences
     return dct
 
 def unHashList(dct):
@@ -165,14 +185,12 @@ def unHashList(dct):
             lst.append(value)
     return lst
 
-def getNumberOfEach(lst): #numberOfEach[i] is the list of values which occur in the roll i times
-    numberOfEach=[[] for _ in range(6)]
-    for value,occurences in hashList(lst):
-        numberOfEach[occurences].append(value)
-    for value in range(1,7):
-        if not value in lst:
-            numberOfEach[0].append(value)
-    return numberOfEach
+def addHashes(hash1,hash2):
+    ret=unHashList(unHashDict(hash1))
+    for value in unHashList(unHashDict(hash2)):
+        ret.append(value)
+    return hashList(ret)
+
 #endregion
 
 #region Rules
@@ -211,9 +229,9 @@ def scoringSingles(x, roll):
 
 def listDuplicates(lst):
     ret=[]
-    for value,occurences in hashList(lst):
-        if occurences>1:
-            for excess in range(occurences-1):
+    for value,occurrences in hashList(lst):
+        if occurrences>1:
+            for excess in range(occurrences-1):
                 ret.append(value)
     return ret
 
@@ -236,9 +254,9 @@ def verifyNormalizationP(p, subset):
 
 def verifyNormalizationProbDict(probdict):
     a=sum(probdict[key] for key in probdict.keys())
-    assert equalWithinTollerance(a, 1.), "total p = {}".format(a)
+    assert equalWithinTolerance(a,1.),"total p = {}".format(a)
 
-def equalWithinTollerance(a, b):
+def equalWithinTolerance(a,b):
     #For checking floating point numbers
     return abs(a-b)<(10**-5)
 
